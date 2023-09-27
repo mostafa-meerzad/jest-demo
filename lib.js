@@ -1,4 +1,4 @@
-// const db = require("./db")
+const db = require("./db");
 // const sendMail = require("./mail")
 
 // Testing numbers
@@ -25,11 +25,18 @@ module.exports.getCurrencies = () => {
 
 // Testing objects
 module.exports.getProduct = (productId) => {
-    return {id:productId, price:10}
-}
+  return { id: productId, price: 10 };
+};
 
 // Testing exceptions
 module.exports.registerUser = (userName) => {
-  if(!userName) throw new Error("userName is required");
-  return {id:new Date().getTime(), userName: userName}
-}
+  if (!userName) throw new Error("userName is required");
+  return { id: new Date().getTime(), userName: userName };
+};
+
+// Mock function
+module.exports.applyDiscount = (order) => {
+  const customer = db.getCustomerSync(order.customerId);// getting customer is the dependency we need to mock of fake in order to write unit-tests
+  console.log(customer.points)
+  if (customer.points > 10) order.totalPrice *= 0.9;
+};

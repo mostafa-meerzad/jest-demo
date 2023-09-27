@@ -1,4 +1,5 @@
 const lib = require("../lib");
+const db = require("../db");
 
 describe("absolute", () => {
   it("should return a positive number if input is positive", () => {
@@ -80,15 +81,31 @@ describe("registerUser", () => {
   // });
 
   // test registerUser with multiple falsy values (parameterized test)
-  it.each([null, undefined, NaN, 0, "", false])("throws an exception for a falsy value %s", (value) => {
-    expect(() => {
-      lib.registerUser(value);
-    }).toThrow()
-    // }).toThrowError("userName is required")
-  })
+  it.each([null, undefined, NaN, 0, "", false])(
+    "throws an exception for a falsy value %s",
+    (value) => {
+      expect(() => {
+        lib.registerUser(value);
+      }).toThrow();
+      // }).toThrowError("userName is required")
+    }
+  );
   it("should return the user object if a valid userName is passed", () => {
-    const result = lib.registerUser("Mostafa")
-    expect(result).toMatchObject({userName:"Mostafa"});
-    expect(result.id).toBeGreaterThan(0)
-  })
+    const result = lib.registerUser("Mostafa");
+    expect(result).toMatchObject({ userName: "Mostafa" });
+    expect(result.id).toBeGreaterThan(0);
+  });
+});
+
+jest.mock("../db");
+
+describe("applyDiscount", () => {
+  it("should apply 10% discount if customer has more than 10 points", () => {
+    db.getCustomerSync.mockReturnValue({ id: 1, points: 20 });
+
+    const order = { customerId: 1, totalPrice: 10 };
+    lib.applyDiscount(order);
+    
+    expect(order.totalPrice).toEqual(9);
+  });
 });
